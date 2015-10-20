@@ -61,16 +61,18 @@ ng-model="input.wholeMsg" autofocus></textarea>
 	<span class="list-group-item" ng-repeat="todo in todos | filter:input | questionFilter:maxQuestion" ng-class="{completed: todo.completed, editing: todo == editedTodo}">
 		<h4 class="list-group-item-heading" ng-switch on="todo.headLastChar">
 			<span class="label label-danger" ng-show="todo.new">New</span>
-			<span class="badge">{{todo.echo}}</span>
+			<span class="badge">{{todo.echo-todo.hate}}</span>
 			<!-- switch -->
 			<span ng-switch-when="?" class="glyphicon glyphicon-question-sign"></span>
 			<span ng-switch-when="!" class="glyphicon glyphicon-ice-lolly"></span>
 			<span ng-class="{completed: todo.completed}">{{todo.head}}</span>
 		</h4>
 		<p class="list-group-item-text"><span ng-bind-html="todo.trustedDesc"></span> created: {{todo.dateString}}
-			<span ng-show="todo.tags">tags: {{todo.tags}}</span></p>
+		<span ng-show="todo.tags">tags: {{todo.tags}}</span>
+		<span ng-repeat="msg in todo.displayMsg" ng-bind-html="msg" style="display:inline-block" ng-click="editInput(msg)"></p>
 
-			<button class="btn btn-default btn-xs glyphicon glyphicon-hand-up" ng-click="addEcho(todo)" ng-disabled="$storage[todo.$id]">Like</button>
+			<button class="btn btn-default btn-xs glyphicon glyphicon-hand-up" ng-click="addEcho(todo)" ng-disabled="$storage[todo.$id]">{{todo.echo}} Likes</button>
+			<button class="btn btn-default btn-xs glyphicon glyphicon-hand-down" ng-click="addHate(todo)" ng-disabled="$storage[todo.$id]">{{todo.hate}} Dislikes</button>
 			<button ng-show="isAdmin" class="btn btn-default btn-xs glyphicon glyphicon-check" ng-click="toggleCompleted(todo)">Toggle Completed</button>
 			&nbsp;
 			<button ng-show="isAdmin" class="btn btn-default btn-xs glyphicon glyphicon-trash" aria-hidden="true" ng-click="removeTodo(todo)">Del</button>

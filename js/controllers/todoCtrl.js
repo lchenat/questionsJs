@@ -33,7 +33,7 @@ if (!roomId || roomId.length === 0) {
 // TODO: Please change this URL for your app
 var firebaseURL = "https://classquestion.firebaseio.com/";
 
-
+$scope.choose = '-html';
 $scope.roomId = roomId;
 var url = firebaseURL + roomId + "/questions/";
 var echoRef = new Firebase(url);
@@ -64,6 +64,12 @@ $scope.$watchCollection('todos', function () {
 		// set time
 		todo.dateString = new Date(todo.timestamp).toString();
 		todo.tags = todo.wholeMsg.match(/#\w+/g);
+		todo.splitMsg = todo.wholeMsg.split(/(#\w+)/g);
+		todo.displayMsg = [];
+		for (var i in todo.splitMsg) {
+		    if (todo.splitMsg[i][0] != '#') todo.displayMsg.push($sce.trustAsHtml('<plaintext>'+todo.splitMsg[i]));
+		    else todo.displayMsg.push($sce.trustAsHtml('<a href="">' + todo.splitMsg[i]  + '</a>'));
+		}
 
 		todo.trustedDesc = $sce.trustAsHtml(todo.linkedDesc);
 	});
@@ -74,6 +80,11 @@ $scope.$watchCollection('todos', function () {
 	$scope.allChecked = remaining === 0;
 	$scope.absurl = $location.absUrl();
 }, true);
+
+$scope.editInput = function($string) {
+    if ($string.length >= 11 && $string.toString().slice(0,11) == '<plaintext>') return;
+    $scope.input.wholeMsg = $string.toString().match(/#\w+/g)[0];
+};
 
 // Get the first sentence and rest
 $scope.getFirstAndRestSentence = function($string) {
@@ -119,6 +130,7 @@ $scope.addTodo = function () {
 		timestamp: new Date().getTime(),
 		tags: "...",
 		echo: 0,
+		    hate: 0,
 		order: 0
 	});
 	// remove the posted question in the input
@@ -135,6 +147,17 @@ $scope.addEcho = function (todo) {
 	todo.echo = todo.echo + 1;
 	// Hack to order using this order.
 	todo.order = todo.order -1;
+	$scope.todos.$save(todo);
+
+	// Disable the button
+	$scope.$storage[todo.$id] = "echoed";
+};
+
+$scope.addHate = function (todo) {
+	$scope.editedTodo = todo;
+	todo.hate = todo.hate + 1;
+	// Hack to order using this order.
+	todo.order = todo.order + 1;
 	$scope.todos.$save(todo);
 
 	// Disable the button
