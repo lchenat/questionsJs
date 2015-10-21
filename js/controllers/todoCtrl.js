@@ -33,7 +33,6 @@ if (!roomId || roomId.length === 0) {
 // TODO: Please change this URL for your app
 var firebaseURL = "https://classquestion.firebaseio.com/";
 
-$scope.choose = '-html';
 $scope.roomId = roomId;
 var url = firebaseURL + roomId + "/questions/";
 var echoRef = new Firebase(url);
@@ -92,20 +91,60 @@ $scope.getQYTime = function(postTime) {
 	}
 	if (m == 0) {
 	} else if (m == 1) {
-	    dateString += "1 minute ";
+	    dateString += "1 minute ago";
 	} else {
-	    dateString += m+" minutes ";
-	}
-	
-	if (s == 1) {
-	    dateString += "1 second ago";
-	} else {
-	    dateString += s+" seconds ago";
+	    dateString += m+" minutes ago";
 	}
     }
-    if (dateString == '0 seconds ago') return 'just now';
+    if (dateString == '') return 'just now'; 
     return dateString;
 };
+
+$scope.trInput = {
+    from: {
+	name: 'from',
+	value: -5000000000000
+    },
+    to: {
+	name: 'to',
+	value: 5000000000000
+    } 
+};
+
+$scope.trOptions = [
+		    {
+			name: 'now',
+			value: 5000000000000
+		    },
+		    {
+			name: '1 hour ago',
+			value: -3600000
+		    },
+		    {
+			name: '2 hour ago',
+			value: -7200000
+		    },
+		    {
+			name: '1 day ago',
+			value: -24*3600000
+		    },
+		    {
+			name: '1 week ago',
+			value: -7*24*3600000
+		    },
+		    {
+			name: '30 days ago',
+			value: -30*24*3600000
+		    },
+		    {
+			name: '365 days ago',
+			value: -365*24*3600000
+		    },
+		    {
+			name: 'time origin',
+			value: -5000000000000
+		    }
+		    ];
     
 // pre-precessing for collection
 $scope.$watchCollection('todos', function () {
@@ -129,8 +168,10 @@ $scope.$watchCollection('todos', function () {
 		todo.splitMsg = todo.wholeMsg.split(/(#\w+)/g);
 		todo.displayMsg = [];
 		for (var i in todo.splitMsg) {
-		    if (todo.splitMsg[i][0] != '#') todo.displayMsg.push($sce.trustAsHtml('<plaintext>'+todo.splitMsg[i]));
-		    else todo.displayMsg.push($sce.trustAsHtml('<a href="">' + todo.splitMsg[i]  + '</a>'));
+		    if (todo.splitMsg[i][0] != '#') {
+			todo.displayMsg.push($sce.trustAsHtml('<plaintext>'+todo.splitMsg[i]));
+		    }
+		    else todo.displayMsg.push($sce.trustAsHtml('<a style="display:inline">' + todo.splitMsg[i]  + '</a>'));
 		}
 
 		todo.trustedDesc = $sce.trustAsHtml(todo.linkedDesc);

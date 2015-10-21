@@ -56,9 +56,17 @@ ng-model="input.wholeMsg" autofocus></textarea>
 </span>
 </div><!-- /input-group -->
 
+<div class="container">
+  <select class="form-control" style="display:inline" ng-model="trInput.from" ng-options="x.name for x in trOptions"></select><!--from-->
+  <select class="form-control" style="display:inline" ng-model="trInput.to" ng-options="x.name for x in trOptions"></select><!--to-->
+</div>
+<div class="test-time">
+  {{ trInput.from.value }}<br>
+  {{ trInput.to.value }}
+</div>
 
 <div class="list-group" id="todo-list">
-	<span class="list-group-item" ng-repeat="todo in todos | filter:input | questionFilter:maxQuestion" ng-class="{completed: todo.completed, editing: todo == editedTodo}">
+	<span class="list-group-item" ng-repeat="todo in todos | filter:input | questionFilter:maxQuestion | trfilter:trInput.from.value:trInput.to.value" ng-class="{completed: todo.completed, editing: todo == editedTodo}">
 		<h4 class="list-group-item-heading" ng-switch on="todo.headLastChar">
 			<span class="label label-danger" ng-show="todo.new">New</span>
 			<span class="badge">{{todo.echo-todo.hate}}</span>
@@ -67,12 +75,12 @@ ng-model="input.wholeMsg" autofocus></textarea>
 			<span ng-switch-when="!" class="glyphicon glyphicon-ice-lolly"></span>
 			<span ng-class="{completed: todo.completed}">{{todo.head}}</span>
 		</h4>
-		<p class="list-group-item-text"><span ng-repeat="msg in todo.displayMsg" ng-bind-html="msg" style="display:inline-block" ng-click="editInput(msg)"></span>
+		<div class="list-group-item-text"><span ng-repeat="msg in todo.displayMsg" ng-bind-html="msg" ng-click="editInput(msg)"></span>
+		</div>
 		  <div>
 		    created: {{todo.dateString}}
 		    <span ng-show="todo.tags">tags: {{todo.tags}}</span>
 		  </div>
-		</p>
 
 			<button class="btn btn-default btn-xs glyphicon glyphicon-hand-up" ng-click="addEcho(todo)" ng-disabled="$storage[todo.$id]">{{todo.echo}} Likes</button>
 			<button class="btn btn-default btn-xs glyphicon glyphicon-hand-down" ng-click="addHate(todo)" ng-disabled="$storage[todo.$id]">{{todo.hate}} Dislikes</button>
@@ -80,7 +88,11 @@ ng-model="input.wholeMsg" autofocus></textarea>
 			&nbsp;
 			<button ng-show="isAdmin" class="btn btn-default btn-xs glyphicon glyphicon-trash" aria-hidden="true" ng-click="removeTodo(todo)">Del</button>
 			<div class="reply">
-			  <div ng-repeat="r in todo.reply track by $index"> {{ r[0] }} <br> {{ getQYTime(r[1]) }}<hr></div>
+			  <div ng-repeat="r in todo.reply track by $index">{{ r[0] }} <br>
+			    <small>{{ getQYTime(r[1]) }}</small>
+			    <span><hr></span>
+			  </div>
+			  </div>
 			  <textarea type="text" class="form-control" placeholder="I also say something" ng-model="todo.new_reply"></textarea>
 			  <button class="btn btn-default" type="button" ng-click="addReply(todo)">reply</button>
 			</div>
@@ -111,6 +123,7 @@ ng-model="input.wholeMsg" autofocus></textarea>
 
 <script src="js/app.js"></script>
 <script src="js/filters/questionFilter.js"></script>
+<script src="js/filters/timeRangeFilter.js"></script>
 <script src="js/controllers/todoCtrl.js"></script>
 <script src="js/directives/todoFocus.js"></script>
 <script src="js/directives/todoBlur.js"></script>
